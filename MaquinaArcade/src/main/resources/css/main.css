@@ -1,140 +1,186 @@
-/* Estilos generales para la aplicación */
+/* Retro Arcade Style for MaquinaArcade */
 
 .root {
-    -fx-font-family: 'Segoe UI', Arial, sans-serif;
-    -fx-background-color: #f5f5f5;
+    -fx-font-family: 'Press Start 2P', 'Courier New', monospace;
+    -fx-background-color: #000000;
+    -fx-background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAEklEQVQImWNgYGD4z0AswK4SAFXuAf8EPy+xAAAAAElFTkSuQmCC');
+    -fx-background-repeat: repeat;
 }
 
+/* Text styling */
 .label {
-    -fx-text-fill: #333333;
+    -fx-text-fill: #00ff00;
+    -fx-effect: dropshadow(gaussian, #00ff00, 2, 0.3, 0, 0);
 }
 
+/* Title styling */
+.label[style*="font-size: 24px"], .label[style*="font-size: 28px"] {
+    -fx-text-fill: #ff00ff;
+    -fx-effect: dropshadow(gaussian, #00ffff, 3, 0.7, 0, 0);
+}
+
+/* Button styling */
 .button {
-    -fx-background-color: #4285f4;
-    -fx-text-fill: white;
+    -fx-background-color: #000080;
+    -fx-text-fill: #ffffff;
     -fx-font-weight: bold;
     -fx-padding: 8px 16px;
-    -fx-background-radius: 4px;
+    -fx-background-radius: 0;
+    -fx-border-color: #00ffff;
+    -fx-border-width: 2px;
+    -fx-border-radius: 0;
+    -fx-effect: dropshadow(gaussian, #00ffff, 5, 0.5, 0, 0);
 }
 
 .button:hover {
-    -fx-background-color: #3275e4;
+    -fx-background-color: #0000aa;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, #ff00ff, 5, 0.8, 0, 0);
 }
 
 .button:pressed {
-    -fx-background-color: #2565d4;
+    -fx-background-color: #0000ff;
+    -fx-border-color: #ff00ff;
 }
 
-/* Estilos para el menú principal */
-
+/* Game cards styling */
 .game-card {
-    -fx-background-color: white;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 0);
-    -fx-background-radius: 8px;
+    -fx-background-color: #000040;
+    -fx-border-color: #00ffff;
+    -fx-border-width: 3px;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-effect: dropshadow(gaussian, #00ffff, 10, 0.5, 0, 0);
     -fx-min-width: 250px;
     -fx-min-height: 200px;
 }
 
 .game-card:hover {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 0);
+    -fx-border-color: #ff00ff;
+    -fx-effect: dropshadow(gaussian, #ff00ff, 15, 0.7, 0, 0);
 }
 
-/* Estilos para los juegos */
-
-.game-container {
-    -fx-background-color: white;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 0);
-    -fx-background-radius: 8px;
-    -fx-padding: 15px;
-}
-
-.control-panel {
-    -fx-background-color: white;
-    -fx-background-radius: 8px;
-    -fx-padding: 15px;
-    -fx-spacing: 10px;
-}
-
-/* Estilos para el tablero de ajedrez */
-
+/* Game-specific styling */
 .chess-cell-light {
-    -fx-background-color: #f0d9b5;
+    -fx-background-color: #003366;
 }
 
 .chess-cell-dark {
-    -fx-background-color: #b58863;
+    -fx-background-color: #000033;
 }
 
 .chess-cell-highlight {
-    -fx-background-color: #6aa84f99;
+    -fx-background-color: #00ff0099;
 }
 
-/* Estilos para Torres de Hanoi */
-
-.hanoi-tower {
-    -fx-stroke: #8b4513;
-    -fx-stroke-width: 2px;
-    -fx-fill: #cd853f;
+/* Slider styling */
+.slider .track {
+    -fx-background-color: #000080;
+    -fx-border-color: #00ffff;
 }
 
-.hanoi-tower-base {
-    -fx-stroke: #8b4513;
-    -fx-stroke-width: 2px;
-    -fx-fill: #a0522d;
+.slider .thumb {
+    -fx-background-color: #ff00ff;
 }
 
-.hanoi-disk {
-    -fx-arc-height: 10px;
-    -fx-arc-width: 10px;
-    -fx-stroke-width: 1px;
-    -fx-stroke: #333333;
+/* Separator styling */
+.separator .line {
+    -fx-border-color: #00ffff;
+    -fx-border-width: 1px;
 }
 
-/* Estilos para barras de herramientas */
-
-.toolbar {
-    -fx-background-color: #4285f4;
-    -fx-padding: 5px 10px;
-}
-
-.toolbar-button {
+/* Control panel styling */
+VBox, HBox {
     -fx-background-color: transparent;
-    -fx-text-fill: white;
-    -fx-border-color: white;
-    -fx-border-radius: 3px;
 }
 
-.toolbar-button:hover {
-    -fx-background-color: #3275e4;
+/* Table styling for history view */
+.table-view {
+    -fx-background-color: #000040;
+    -fx-border-color: #00ffff;
+    -fx-border-width: 2px;
 }
 
-/* Estilos para el historial */
-
-.record-item {
-    -fx-background-color: white;
-    -fx-padding: 10px;
-    -fx-border-color: #ddd;
-    -fx-border-width: 0 0 1 0;
+.table-view .column-header {
+    -fx-background-color: #000080;
 }
 
-.record-item:hover {
-    -fx-background-color: #f9f9f9;
+.table-view .column-header .label {
+    -fx-text-fill: #ffffff;
 }
 
-/* Estilos para mensajes de solución */
-
-.success-message {
-    -fx-text-fill: #2e7d32;
-    -fx-font-weight: bold;
+.table-view .table-cell {
+    -fx-text-fill: #00ff00;
+    -fx-border-color: #000080;
 }
 
-.warning-message {
-    -fx-text-fill: #ff8f00;
-    -fx-font-weight: bold;
+.table-row-cell {
+    -fx-background-color: #000040;
 }
 
-.error-message {
-    -fx-text-fill: #c62828;
-    -fx-font-weight: bold;
+.table-row-cell:odd {
+    -fx-background-color: #000060;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #0000aa;
+}
+
+/* Spinner styling */
+.spinner {
+    -fx-background-color: #000080;
+    -fx-border-color: #00ffff;
+}
+
+.spinner .increment-arrow-button, .spinner .decrement-arrow-button {
+    -fx-background-color: #000080;
+}
+
+.spinner .increment-arrow, .spinner .decrement-arrow {
+    -fx-background-color: #00ffff;
+}
+
+/* Scrollbar styling */
+.scroll-bar {
+    -fx-background-color: #000040;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #00ffff;
+}
+
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-background-color: #000080;
+}
+
+/* Arcade scanlines effect */
+.root {
+    -fx-effect: innershadow(gaussian, rgba(0,100,0,0.3), 10, 0.5, 0, 0);
+}
+
+/* ComboBox styling */
+.combo-box {
+    -fx-background-color: #000080;
+    -fx-border-color: #00ffff;
+    -fx-border-width: 2px;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: #00ff00;
+    -fx-background-color: #000080;
+}
+
+.combo-box .arrow {
+    -fx-background-color: #00ffff;
+}
+
+/* Title flashing animation */
+@keyframes neonFlash {
+    0% { -fx-effect: dropshadow(gaussian, #00ffff, 3, 0.7, 0, 0); }
+    50% { -fx-effect: dropshadow(gaussian, #ff00ff, 3, 0.7, 0, 0); }
+    100% { -fx-effect: dropshadow(gaussian, #00ffff, 3, 0.7, 0, 0); }
+}
+
+.label[style*="font-size: 28px"] {
+    animation: neonFlash 2s infinite;
 }

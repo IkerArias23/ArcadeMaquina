@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.arcade.controller.MainController"
+            prefHeight="600.0" prefWidth="800.0">
+
+    <top>
+        <VBox alignment="CENTER" spacing="10">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+            <Label fx:id="titleLabel" text="Máquina Arcade de Lógica" style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+            <Label text="Selecciona un juego para comenzar" style="-fx-font-size: 16px;"/>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox fx:id="mainContainer" alignment="CENTER" spacing="20">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <HBox alignment="CENTER" spacing="50">
+                <VBox alignment="CENTER" spacing="10" styleClass="game-card">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Label text="N Reinas" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                    <Label text="Coloca N reinas en un tablero sin que se amenacen entre sí"
+                           wrapText="true" maxWidth="250" textAlignment="CENTER"/>
+                    <Button fx:id="queensButton" text="Jugar" prefWidth="150"/>
+                </VBox>
+
+                <VBox alignment="CENTER" spacing="10" styleClass="game-card">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Label text="Recorrido del Caballo" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                    <Label text="Recorre todo el tablero con el caballo de ajedrez sin repetir casilla"
+                           wrapText="true" maxWidth="250" textAlignment="CENTER"/>
+                    <Button fx:id="knightButton" text="Jugar" prefWidth="150"/>
+                </VBox>
+
+                <VBox alignment="CENTER" spacing="10" styleClass="game-card">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Label text="Torres de Hanoi" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                    <Label text="Mueve todos los discos de una torre a otra siguiendo las reglas"
+                           wrapText="true" maxWidth="250" textAlignment="CENTER"/>
+                    <Button fx:id="hanoiButton" text="Jugar" prefWidth="150"/>
+                </VBox>
+            </HBox>
+
+            <Separator/>
+
+            <HBox alignment="CENTER" spacing="20">
+                <Button fx:id="historyButton" text="Ver Historial de Partidas" prefWidth="200"/>
+            </HBox>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="Proyecto de Técnicas de Programación - Versión 1.0" style="-fx-font-size: 12px;"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

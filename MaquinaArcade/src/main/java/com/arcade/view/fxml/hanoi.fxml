@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.arcade.controller.HanoiController"
+            prefHeight="600.0" prefWidth="800.0">
+
+    <top>
+        <VBox alignment="CENTER" spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label fx:id="titleLabel" text="Torres de Hanoi" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+            <Label text="Mueve todos los discos de la primera torre a la tercera, un disco a la vez" style="-fx-font-size: 14px;"/>
+        </VBox>
+    </top>
+
+    <left>
+        <VBox alignment="CENTER" spacing="15" prefWidth="220">
+            <padding>
+                <Insets top="20" right="10" bottom="20" left="20"/>
+            </padding>
+
+            <Label text="Configuración" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+            <Label fx:id="disksLabel" text="Número de discos: 5"/>
+            <Slider fx:id="disksSlider" min="3" max="10" value="5" showTickLabels="true" showTickMarks="true"
+                    majorTickUnit="1" minorTickCount="0" snapToTicks="true"/>
+
+            <Button fx:id="initButton" text="Iniciar Juego" prefWidth="150" style="-fx-font-weight: bold;"/>
+
+            <Separator/>
+
+            <Label text="Controles" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+            <Button fx:id="solveButton" text="Resolver Automáticamente" prefWidth="180"/>
+            <Button fx:id="stepButton" text="Paso a Paso" prefWidth="180"/>
+            <Button fx:id="resetButton" text="Reiniciar" prefWidth="180"/>
+
+            <Separator/>
+
+            <Label text="Estadísticas" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+            <Label fx:id="movesLabel" text="Movimientos: 0 / 31"/>
+            <Label fx:id="optimalLabel" text="Movimientos óptimos: 31"/>
+            <Label fx:id="timeLabel" text="Tiempo: 0s"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Label text="Instrucciones:" style="-fx-font-weight: bold;"/>
+            <Label text="1. Haz clic en una torre para seleccionarla&#10;2. Haz clic en otra torre para mover el disco&#10;3. No puedes colocar un disco más grande sobre uno más pequeño" wrapText="true"/>
+        </VBox>
+    </left>
+
+    <center>
+        <Pane fx:id="mainContainer" prefHeight="400.0" prefWidth="500.0">
+            <!-- El tablero de Hanoi se agregará aquí programáticamente -->
+        </Pane>
+    </center>
+
+</BorderPane>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.arcade.controller.HistoryController"
+            prefHeight="500.0" prefWidth="700.0">
+
+    <top>
+        <VBox alignment="CENTER" spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label fx:id="titleLabel" text="Historial de Partidas" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Filtrar por juego:"/>
+                <ComboBox fx:id="gameTypeComboBox" prefWidth="200"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="refreshButton" text="Actualizar" prefWidth="100"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <TableView fx:id="recordsTable" VBox.vgrow="ALWAYS">
+            <placeholder>
+                <Label text="No hay registros para mostrar"/>
+            </placeholder>
+            <!-- Las columnas se crean programáticamente en el controlador -->
+        </TableView>
+    </center>
+
+    <bottom>
+        <VBox spacing="10" alignment="CENTER">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <Label fx:id="statsLabel" text="Total de partidas: 0 | Completadas: 0 (0.0%)"/>
+
+            <HBox spacing="10" alignment="CENTER">
+                <Button fx:id="deleteButton" text="Eliminar Seleccionado" prefWidth="180"/>
+                <Button fx:id="closeButton" text="Cerrar" prefWidth="100"/>
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>

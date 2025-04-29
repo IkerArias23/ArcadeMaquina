@@ -1,0 +1,140 @@
+/* Estilos generales para la aplicación */
+
+.root {
+    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+    -fx-background-color: #f5f5f5;
+}
+
+.label {
+    -fx-text-fill: #333333;
+}
+
+.button {
+    -fx-background-color: #4285f4;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 4px;
+}
+
+.button:hover {
+    -fx-background-color: #3275e4;
+    -fx-cursor: hand;
+}
+
+.button:pressed {
+    -fx-background-color: #2565d4;
+}
+
+/* Estilos para el menú principal */
+
+.game-card {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 0);
+    -fx-background-radius: 8px;
+    -fx-min-width: 250px;
+    -fx-min-height: 200px;
+}
+
+.game-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 0);
+}
+
+/* Estilos para los juegos */
+
+.game-container {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 0);
+    -fx-background-radius: 8px;
+    -fx-padding: 15px;
+}
+
+.control-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-padding: 15px;
+    -fx-spacing: 10px;
+}
+
+/* Estilos para el tablero de ajedrez */
+
+.chess-cell-light {
+    -fx-background-color: #f0d9b5;
+}
+
+.chess-cell-dark {
+    -fx-background-color: #b58863;
+}
+
+.chess-cell-highlight {
+    -fx-background-color: #6aa84f99;
+}
+
+/* Estilos para Torres de Hanoi */
+
+.hanoi-tower {
+    -fx-stroke: #8b4513;
+    -fx-stroke-width: 2px;
+    -fx-fill: #cd853f;
+}
+
+.hanoi-tower-base {
+    -fx-stroke: #8b4513;
+    -fx-stroke-width: 2px;
+    -fx-fill: #a0522d;
+}
+
+.hanoi-disk {
+    -fx-arc-height: 10px;
+    -fx-arc-width: 10px;
+    -fx-stroke-width: 1px;
+    -fx-stroke: #333333;
+}
+
+/* Estilos para barras de herramientas */
+
+.toolbar {
+    -fx-background-color: #4285f4;
+    -fx-padding: 5px 10px;
+}
+
+.toolbar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-border-color: white;
+    -fx-border-radius: 3px;
+}
+
+.toolbar-button:hover {
+    -fx-background-color: #3275e4;
+}
+
+/* Estilos para el historial */
+
+.record-item {
+    -fx-background-color: white;
+    -fx-padding: 10px;
+    -fx-border-color: #ddd;
+    -fx-border-width: 0 0 1 0;
+}
+
+.record-item:hover {
+    -fx-background-color: #f9f9f9;
+}
+
+/* Estilos para mensajes de solución */
+
+.success-message {
+    -fx-text-fill: #2e7d32;
+    -fx-font-weight: bold;
+}
+
+.warning-message {
+    -fx-text-fill: #ff8f00;
+    -fx-font-weight: bold;
+}
+
+.error-message {
+    -fx-text-fill: #c62828;
+    -fx-font-weight: bold;
+}

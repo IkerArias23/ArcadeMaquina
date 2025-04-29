@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!-- Configuración de la conexión H2 embebida -->
+        <property name="hibernate.connection.driver_class">org.h2.Driver</property>
+        <property name="hibernate.connection.url">jdbc:h2:./arcadedb;DB_CLOSE_DELAY=-1</property>
+        <property name="hibernate.connection.username">sa</property>
+        <property name="hibernate.connection.password"></property>
+
+        <!-- Dialecto SQL para H2 -->
+        <property name="hibernate.dialect">org.hibernate.dialect.H2Dialect</property>
+
+        <!-- Configuración de la sesión -->
+        <property name="hibernate.current_session_context_class">thread</property>
+
+        <!-- Configuración de depuración -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <!-- Configuración de la base de datos -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- Mapeo de entidades -->
+        <mapping class="com.arcade.model.entity.GameRecord"/>
+        <mapping class="com.arcade.model.entity.QueenRecord"/>
+        <mapping class="com.arcade.model.entity.KnightRecord"/>
+        <mapping class="com.arcade.model.entity.HanoiRecord"/>
+    </session-factory>
+</hibernate-configuration>

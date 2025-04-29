@@ -1,6 +1,8 @@
 package com.arcade.view.components;
 
 import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -8,6 +10,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.StrokeLineCap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,23 +24,27 @@ import java.util.function.Consumer;
 public class HanoiBoard extends Pane {
 
     private int numDisks;
-    private List<Rectangle> towers;
-    private List<List<Rectangle>> disks;
+    private Rectangle[] towerRods;       // Las torres (postes verticales)
+    private Rectangle[] towerClickAreas; // Áreas para hacer clic en las torres
+    private Rectangle base;              // La base horizontal
+    private List<List<Rectangle>> disks; // Discos en cada torre
     private Consumer<Integer> towerClickHandler;
 
     // Constantes de dimensiones
     private static final int TOWER_WIDTH = 20;
     private static final int TOWER_HEIGHT = 200;
     private static final int TOWER_SPACING = 200;
-    private static final int BASE_WIDTH = 600;
+    private static final int BASE_WIDTH = 650;
     private static final int BASE_HEIGHT = 20;
     private static final int DISK_HEIGHT = 20;
     private static final int MAX_DISK_WIDTH = 180;
+    private static final int CLICK_AREA_WIDTH = 160; // Área amplia para clic
 
     // Colores
     private static final Color TOWER_COLOR = Color.BROWN;
     private static final Color BASE_COLOR = Color.BROWN;
     private static final Color HIGHLIGHT_COLOR = Color.YELLOW;
+    private static final Color CLICK_AREA_COLOR = Color.color(0, 0, 0, 0.01); // Casi transparente
 
     /**
      * Constructor con número de discos
@@ -44,7 +52,8 @@ public class HanoiBoard extends Pane {
      */
     public HanoiBoard(int numDisks) {
         this.numDisks = numDisks;
-        this.towers = new ArrayList<>(3);
+        this.towerRods = new Rectangle[3];
+        this.towerClickAreas = new Rectangle[3];
         this.disks = new ArrayList<>(3);
 
         for (int i = 0; i < 3; i++) {
@@ -59,31 +68,49 @@ public class HanoiBoard extends Pane {
      */
     private void initialize() {
         // Configurar panel
-        this.setPrefSize(BASE_WIDTH + 100, TOWER_HEIGHT + BASE_HEIGHT + 50);
-        this.setMinSize(BASE_WIDTH + 100, TOWER_HEIGHT + BASE_HEIGHT + 50);
+        this.setPrefSize(BASE_WIDTH + 50, TOWER_HEIGHT + BASE_HEIGHT + 50);
+        this.setMinSize(BASE_WIDTH + 50, TOWER_HEIGHT + BASE_HEIGHT + 50);
+
+        // Añadir un borde para depuración visual
+        this.setStyle("-fx-border-color: blue; -fx-border-width: 1px;");
 
         // Crear base
-        Rectangle base = new Rectangle(0, TOWER_HEIGHT, BASE_WIDTH, BASE_HEIGHT);
+        base = new Rectangle(0, TOWER_HEIGHT, BASE_WIDTH, BASE_HEIGHT);
         base.setFill(BASE_COLOR);
         this.getChildren().add(base);
 
-        // Crear torres
+        // Crear torres y áreas de clic
         for (int i = 0; i < 3; i++) {
             int xPos = i * TOWER_SPACING + (TOWER_SPACING / 2) - (TOWER_WIDTH / 2);
 
+            // Crear el poste de la torre
             Rectangle tower = new Rectangle(xPos, 0, TOWER_WIDTH, TOWER_HEIGHT);
             tower.setFill(TOWER_COLOR);
 
+            // Crear área de clic para la torre (más ancha para mejor interacción)
+            Rectangle clickArea = new Rectangle(
+                    xPos - CLICK_AREA_WIDTH/2 + TOWER_WIDTH/2,
+                    0,
+                    CLICK_AREA_WIDTH,
+                    TOWER_HEIGHT
+            );
+            clickArea.setFill(CLICK_AREA_COLOR);
+
+            // Añadir ayuda visual para depuración
+            Tooltip.install(clickArea, new Tooltip("Torre " + (i+1)));
+
             // Agregar evento de clic
             final int towerIndex = i;
-            tower.setOnMouseClicked(event -> {
+            clickArea.setOnMouseClicked(event -> {
+                System.out.println("Clic en torre " + (towerIndex+1));
                 if (towerClickHandler != null) {
                     towerClickHandler.accept(towerIndex);
                 }
             });
 
-            this.getChildren().add(tower);
-            towers.add(tower);
+            this.getChildren().addAll(tower, clickArea);
+            towerRods[i] = tower;
+            towerClickAreas[i] = clickArea;
         }
 
         // Crear discos iniciales en la primera torre
@@ -123,9 +150,16 @@ public class HanoiBoard extends Pane {
         disk.setArcWidth(10);
         disk.setArcHeight(10);
 
+        // Añadir borde para mejor visibilidad
+        disk.setStroke(Color.BLACK);
+        disk.setStrokeWidth(1);
+
         // Agregar disco a la torre
         disks.get(tower).add(disk);
         this.getChildren().add(disk);
+
+        // Asegurar que el disco esté por encima de la torre
+        disk.toFront();
 
         return disk;
     }
@@ -145,11 +179,16 @@ public class HanoiBoard extends Pane {
 
         // Crear discos según el estado actual
         for (int i = 0; i < 3; i++) {
-            if (towerDisks[i] != null) {
-                for (int j = towerDisks[i].length - 1; j >= 0; j--) {
+            if (towerDisks[i] != null && towerDisks[i].length > 0) {
+                for (int j = 0; j < towerDisks[i].length; j++) {
                     createDisk(i, towerDisks[i][j]);
                 }
             }
+        }
+
+        // Asegurar que las áreas de clic estén en el frente
+        for (Rectangle clickArea : towerClickAreas) {
+            clickArea.toFront();
         }
     }
 
@@ -168,13 +207,13 @@ public class HanoiBoard extends Pane {
      */
     public void highlightTower(int tower) {
         // Restaurar colores originales
-        for (Rectangle t : towers) {
+        for (Rectangle t : towerRods) {
             t.setFill(TOWER_COLOR);
         }
 
         // Resaltar torre seleccionada
         if (tower >= 0 && tower < 3) {
-            towers.get(tower).setFill(HIGHLIGHT_COLOR);
+            towerRods[tower].setFill(HIGHLIGHT_COLOR);
         }
     }
 
@@ -195,9 +234,16 @@ public class HanoiBoard extends Pane {
      * @return color
      */
     private Color getDiskColor(int size) {
-        // Usar una escala de colores según el tamaño del disco
-        double hue = (360.0 * size / numDisks) % 360;
-        return Color.hsb(hue, 0.7, 0.9);
+        // Usar colores fijos para mejor identificación
+        switch (size % 6) {
+            case 0: return Color.RED;
+            case 1: return Color.MAGENTA;
+            case 2: return Color.BLUE;
+            case 3: return Color.GREEN;
+            case 4: return Color.YELLOW;
+            case 5: return Color.ORANGE;
+            default: return Color.CYAN;
+        }
     }
 
     /**

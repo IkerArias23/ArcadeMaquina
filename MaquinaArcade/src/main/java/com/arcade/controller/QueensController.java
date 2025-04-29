@@ -56,6 +56,7 @@ public class QueensController implements GameController {
     private GameType gameType;
     private QueensGame game;
     private ChessBoard chessBoard;
+    private int currentRow = 0; // Para seguir el progreso de la solución paso a paso
 
     /**
      * Inicialización del controlador
@@ -113,6 +114,7 @@ public class QueensController implements GameController {
         int size = (int) sizeSlider.getValue();
         try {
             gameService.initializeGame(game, size);
+            currentRow = 0; // Reiniciar el progreso del paso a paso
 
             // Crear o actualizar el tablero
             if (chessBoard == null) {
@@ -144,15 +146,73 @@ public class QueensController implements GameController {
     @Override
     public void stepGame() {
         if (game != null) {
-            boolean success = gameService.stepGame(game);
+            int boardSize = game.getBoardSize();
 
-            updateUI();
-
-            if (!success) {
+            // Si ya llegamos al final del tablero, no hay más pasos que dar
+            if (currentRow >= boardSize) {
                 showAlert(Alert.AlertType.INFORMATION, "Información",
                         "No se pueden realizar más pasos",
-                        "El juego ha llegado a su estado final.");
+                        "Todas las reinas han sido colocadas.");
+                return;
             }
+
+            // Implementación manual del paso a paso para mayor control visual
+            // En vez de usar el game.step(), colocaremos una reina manualmente
+            // en cada paso para garantizar visualización
+
+            // Limpiar la fila actual (por si había alguna reina previa)
+            for (int col = 0; col < boardSize; col++) {
+                if (game.getQueensPositions()[currentRow] == col) {
+                    game.removeQueen(currentRow, col);
+                }
+            }
+
+            // Intentar colocar la reina en cada columna de la fila actual hasta encontrar posición válida
+            boolean foundValid = false;
+            for (int col = 0; col < boardSize; col++) {
+                if (game.placeQueen(currentRow, col)) {
+                    foundValid = true;
+                    break;
+                }
+            }
+
+            // Si no se encontró posición válida en esta fila, retroceder a la fila anterior
+            if (!foundValid) {
+                if (currentRow > 0) {
+                    // Retroceder a la fila anterior
+                    currentRow--;
+
+                    // Quitar la reina de la fila anterior y actualizar
+                    int prevCol = game.getQueensPositions()[currentRow];
+                    if (prevCol >= 0) {
+                        game.removeQueen(currentRow, prevCol);
+                    }
+
+                    showAlert(Alert.AlertType.INFORMATION, "Paso a paso",
+                            "Retroceso",
+                            "No hay posición válida en la fila " + (currentRow + 1) +
+                                    ". Retrocediendo a la fila " + (currentRow + 1) + ".");
+                } else {
+                    showAlert(Alert.AlertType.INFORMATION, "Información",
+                            "No hay solución",
+                            "No se puede colocar reina en la primera fila.");
+                }
+            } else {
+                // Avanzar a la siguiente fila para el próximo paso
+                currentRow++;
+
+                // Si hemos colocado todas las reinas, mostrar mensaje de éxito
+                if (currentRow == boardSize) {
+                    showAlert(Alert.AlertType.INFORMATION, "¡Éxito!",
+                            "Solución encontrada",
+                            "Se ha encontrado una solución válida para el tablero de " +
+                                    boardSize + " reinas.");
+                    endGame();
+                }
+            }
+
+            // Actualizar UI
+            updateUI();
         }
     }
 
@@ -164,26 +224,41 @@ public class QueensController implements GameController {
 
             // Resolver en un hilo separado para no bloquear la UI
             new Thread(() -> {
-                boolean success = gameService.solveGame(game);
-
-                // Actualizar UI en el hilo de JavaFX
-                Platform.runLater(() -> {
-                    updateUI();
-                    setControlsEnabled(true);
-
+                boolean success = false;
+                try {
+                    success = gameService.solveGame(game);
+                    // Actualizar contador de filas para el paso a paso
                     if (success) {
-                        showAlert(Alert.AlertType.INFORMATION, "Éxito",
-                                "Problema resuelto",
-                                "Se ha encontrado una solución válida.");
-
-                        // Guardar el resultado
-                        endGame();
-                    } else {
-                        showAlert(Alert.AlertType.WARNING, "Advertencia",
-                                "No se encontró solución",
-                                "No se pudo resolver el problema con los parámetros actuales.");
+                        currentRow = game.getBoardSize();
                     }
-                });
+                } catch (Exception e) {
+                    Platform.runLater(() -> {
+                        showAlert(Alert.AlertType.ERROR, "Error",
+                                "Error al resolver",
+                                "Ocurrió un error al resolver: " + e.getMessage());
+                    });
+                } finally {
+                    final boolean finalSuccess = success;
+
+                    // Actualizar UI en el hilo de JavaFX
+                    Platform.runLater(() -> {
+                        updateUI();
+                        setControlsEnabled(true);
+
+                        if (finalSuccess) {
+                            showAlert(Alert.AlertType.INFORMATION, "Éxito",
+                                    "Problema resuelto",
+                                    "Se ha encontrado una solución válida.");
+
+                            // Guardar el resultado
+                            endGame();
+                        } else {
+                            showAlert(Alert.AlertType.WARNING, "Advertencia",
+                                    "No se encontró solución",
+                                    "No se pudo resolver el problema con los parámetros actuales.");
+                        }
+                    });
+                }
             }).start();
         }
     }
@@ -192,6 +267,7 @@ public class QueensController implements GameController {
     public void resetGame() {
         if (game != null) {
             game.reset();
+            currentRow = 0; // Reiniciar el progreso del paso a paso
 
             // Limpiar tablero
             if (chessBoard != null) {
@@ -230,8 +306,8 @@ public class QueensController implements GameController {
 
     /**
      * Maneja los clics en el tablero
-     * @param x coordenada x
-     * @param y coordenada y
+     * @param x coordenada X
+     * @param y coordenada Y
      */
     private void handleBoardClick(int x, int y) {
         if (game != null && chessBoard != null) {

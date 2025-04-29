@@ -105,7 +105,6 @@ public class MainController {
             GameController controller = loader.getController();
             controller.setGameService(gameService);
             controller.setGameType(gameType);
-            controller.initGame();
 
             // Crear y mostrar la ventana
             Stage gameStage = new Stage();
@@ -132,20 +131,25 @@ public class MainController {
      */
     private void openHistoryView() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/history.fxml"));
+            // Cargar el FXML del historial
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/histori.fxml"));
             Parent root = loader.load();
 
             // Configurar el controlador de historial
-            // HistoryController controller = loader.getController();
-            // controller.setGameService(gameService);
-            // controller.loadHistory();
+            HistoryController controller = loader.getController();
+            controller.setGameService(gameService);
 
-            // Crear y mostrar la ventana
+            // Crear la ventana
             Stage historyStage = new Stage();
             historyStage.initModality(Modality.WINDOW_MODAL);
             historyStage.initOwner(ArcadeApplication.getInstance().getPrimaryStage());
             historyStage.setTitle("Historial de Partidas");
-            historyStage.setScene(new Scene(root, 600, 400));
+            historyStage.setScene(new Scene(root, 700, 500));
+            historyStage.setMinWidth(600);
+            historyStage.setMinHeight(400);
+
+            // Pasar referencia de la ventana al controlador para poder cerrarla
+            controller.setStage(historyStage);
 
             historyStage.show();
 

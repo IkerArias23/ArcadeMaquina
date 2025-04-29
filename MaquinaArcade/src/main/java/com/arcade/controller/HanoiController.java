@@ -65,6 +65,7 @@ public class HanoiController implements GameController {
     private HanoiGame game;
     private HanoiBoard hanoiBoard;
     private int selectedTower = -1; // Torre seleccionada para mover
+    private int currentStepIndex = 0; // Índice actual para el paso a paso
 
     /**
      * Inicialización del controlador
@@ -128,15 +129,16 @@ public class HanoiController implements GameController {
         int disks = (int) disksSlider.getValue();
         try {
             gameService.initializeGame(game, disks);
+            currentStepIndex = 0; // Reiniciar el índice para paso a paso
 
             // Crear o actualizar el tablero
-            if (hanoiBoard == null) {
-                hanoiBoard = new HanoiBoard(disks);
-                mainContainer.getChildren().add(hanoiBoard);
-                hanoiBoard.relocate(50, 100);
-            } else {
-                hanoiBoard.setNumDisks(disks);
+            if (hanoiBoard != null) {
+                mainContainer.getChildren().remove(hanoiBoard);
             }
+
+            hanoiBoard = new HanoiBoard(disks);
+            mainContainer.getChildren().add(hanoiBoard);
+            hanoiBoard.relocate(50, 100);
 
             // Configurar interacción con el tablero
             hanoiBoard.setOnTowerClick(tower -> handleTowerClick(tower));
@@ -154,7 +156,11 @@ public class HanoiController implements GameController {
             initButton.setDisable(true);
             disksSlider.setDisable(true);
 
+            // Reiniciar la selección
+            selectedTower = -1;
+
         } catch (Exception e) {
+            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "No se pudo inicializar el juego", e.getMessage());
         }
     }
@@ -162,27 +168,44 @@ public class HanoiController implements GameController {
     @Override
     public void stepGame() {
         if (game != null) {
-            boolean success = gameService.stepGame(game);
+            // Obtener la solución óptima
+            List<Move> optimalSolution = game.getOptimalSolution();
 
-            // Actualizar tablero
-            updateHanoiBoard();
-
-            // Actualizar UI
-            updateUI();
-
-            if (!success) {
+            // Verificar si hay más pasos disponibles
+            if (currentStepIndex >= optimalSolution.size()) {
                 showAlert(Alert.AlertType.INFORMATION, "Información",
                         "No se pueden realizar más pasos",
                         "El juego ha llegado a su estado final.");
+                return;
             }
 
-            // Verificar si se completó el puzzle
-            if (game.isSolved()) {
-                showAlert(Alert.AlertType.INFORMATION, "¡Felicidades!",
-                        "Puzzle completado",
-                        "Se ha completado el puzzle con " + game.getMoves().size() +
-                                " movimientos. Movimientos óptimos: " + game.getMinimumMoves());
-                endGame();
+            // Obtener el siguiente movimiento
+            Move nextMove = optimalSolution.get(currentStepIndex);
+
+            // Realizar el movimiento
+            boolean success = game.moveDisk(nextMove.getFromTower(), nextMove.getToTower());
+
+            if (success) {
+                currentStepIndex++;
+
+                // Actualizar tablero
+                updateHanoiBoard();
+
+                // Actualizar UI
+                updateUI();
+
+                // Verificar si se completó el puzzle
+                if (game.isSolved()) {
+                    showAlert(Alert.AlertType.INFORMATION, "¡Felicidades!",
+                            "Puzzle completado",
+                            "Se ha completado el puzzle con " + game.getMoves().size() +
+                                    " movimientos. Movimientos óptimos: " + game.getMinimumMoves());
+                    endGame();
+                }
+            } else {
+                showAlert(Alert.AlertType.WARNING, "Advertencia",
+                        "Movimiento inválido",
+                        "No se pudo realizar el movimiento automático.");
             }
         }
     }
@@ -196,6 +219,7 @@ public class HanoiController implements GameController {
             // Resolver en un hilo separado para no bloquear la UI
             new Thread(() -> {
                 boolean success = gameService.solveGame(game);
+                currentStepIndex = game.getOptimalSolution().size(); // Actualizar el contador de pasos
 
                 // Actualizar UI en el hilo de JavaFX
                 Platform.runLater(() -> {
@@ -225,6 +249,7 @@ public class HanoiController implements GameController {
     public void resetGame() {
         if (game != null) {
             game.reset();
+            currentStepIndex = 0;
 
             // Habilitar controles
             initButton.setDisable(false);
@@ -272,27 +297,33 @@ public class HanoiController implements GameController {
      * @param tower índice de la torre (0, 1 o 2)
      */
     private void handleTowerClick(int tower) {
+        System.out.println("Click en torre: " + tower);
+
         if (game != null && hanoiBoard != null) {
+            List<Stack<Disk>> towers = game.getTowers();
+
             if (selectedTower == -1) {
                 // Primera selección (torre origen)
-                List<Stack<Disk>> towers = game.getTowers();
-
                 // Verificar que la torre tenga discos
                 if (towers.get(tower).isEmpty()) {
+                    // No mostramos alerta para mejorar la experiencia de usuario
+                    // simplemente ignoramos el clic en torres vacías
                     return;
                 }
 
                 // Seleccionar torre
                 selectedTower = tower;
                 hanoiBoard.highlightTower(tower);
-
+                System.out.println("Torre seleccionada: " + tower);
             } else {
                 // Segunda selección (torre destino)
                 if (selectedTower != tower) {
+                    System.out.println("Intentando mover disco de torre " + selectedTower + " a torre " + tower);
                     // Intentar mover disco
                     boolean success = game.moveDisk(selectedTower, tower);
 
                     if (success) {
+                        System.out.println("Movimiento exitoso");
                         // Actualizar tablero
                         updateHanoiBoard();
 
@@ -305,14 +336,18 @@ public class HanoiController implements GameController {
                             endGame();
                         }
                     } else {
+                        System.out.println("Movimiento inválido");
                         showAlert(Alert.AlertType.WARNING, "Movimiento inválido",
                                 "No se puede mover el disco",
                                 "No se puede colocar un disco más grande sobre uno más pequeño.");
                     }
+                } else {
+                    System.out.println("Deseleccionando torre");
                 }
 
                 // Limpiar selección
                 selectedTower = -1;
+                hanoiBoard.highlightTower(-1);
             }
 
             // Actualizar UI

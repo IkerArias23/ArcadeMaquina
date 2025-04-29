@@ -68,6 +68,11 @@ public class KnightController implements GameController {
     private KnightGame game;
     private ChessBoard chessBoard;
     private int lastX, lastY; // Última posición del caballo
+    private boolean solutionInProgress = false;
+    private int[][] possibleMoves = {
+            {2, 1}, {1, 2}, {-1, 2}, {-2, 1},
+            {-2, -1}, {-1, -2}, {1, -2}, {2, -1}
+    };
 
     /**
      * Inicialización del controlador
@@ -144,6 +149,7 @@ public class KnightController implements GameController {
         int size = (int) sizeSlider.getValue();
         int startX = startXSpinner.getValue();
         int startY = startYSpinner.getValue();
+        solutionInProgress = false;
 
         try {
             gameService.initializeGame(game, size, startX, startY);
@@ -188,48 +194,65 @@ public class KnightController implements GameController {
     @Override
     public void stepGame() {
         if (game != null) {
-            // Ejecutar un paso de la solución automática
-            boolean success = false;
+            // Si estamos en solución automática, continuamos con el próximo paso
+            if (solutionInProgress) {
+                // Permitir que el juego controle el paso
+                boolean success = gameService.stepGame(game);
+                updateUI();
 
-            // Obtener estado actual del tablero
-            int[][] board = game.getBoard();
+                if (!success) {
+                    showAlert(Alert.AlertType.INFORMATION, "Información",
+                            "No se pueden realizar más pasos",
+                            "El juego ha llegado a su estado final.");
+                    solutionInProgress = false;
+                }
+
+                return;
+            }
+
+            // Intentar encontrar un movimiento válido desde la posición actual
             int size = game.getBoardSize();
+            int[][] board = game.getBoard();
+            boolean foundMove = false;
 
-            // Buscar el último movimiento
-            int lastMove = -1;
-            int nextX = -1, nextY = -1;
+            // Probar los posibles movimientos del caballo
+            for (int i = 0; i < possibleMoves.length; i++) {
+                int newX = lastX + possibleMoves[i][0];
+                int newY = lastY + possibleMoves[i][1];
 
-            for (int i = 0; i < size; i++) {
-                for (int j = 0; j < size; j++) {
-                    if (board[i][j] > lastMove) {
-                        lastMove = board[i][j];
-                        nextX = j;
-                        nextY = i;
+                // Verificar si el movimiento es válido
+                if (newX >= 0 && newX < size && newY >= 0 && newY < size && board[newY][newX] == -1) {
+                    // Intentar mover el caballo
+                    if (game.move(lastX, lastY, newX, newY)) {
+                        // Actualizar tablero
+                        chessBoard.placeKnightAt(newX, newY);
+                        chessBoard.placeNumberAt(newX, newY, game.getTotalMoves() - 1);
+
+                        // Actualizar última posición
+                        lastX = newX;
+                        lastY = newY;
+
+                        foundMove = true;
+                        break;
                     }
                 }
             }
 
-            // Realizar el siguiente movimiento automático
-            if (nextX >= 0 && nextY >= 0) {
-                success = game.move(lastX, lastY, nextX, nextY);
-
-                if (success) {
-                    // Actualizar tablero
-                    chessBoard.placeKnightAt(nextX, nextY);
-                    chessBoard.placeNumberAt(nextX, nextY, lastMove + 1);
-
-                    // Actualizar última posición
-                    lastX = nextX;
-                    lastY = nextY;
-                }
-            }
-
+            // Actualizar UI
             updateUI();
 
-            if (!success) {
+            if (!foundMove) {
                 showAlert(Alert.AlertType.INFORMATION, "Información",
-                        "No se pueden realizar más pasos",
-                        "El juego ha llegado a su estado final.");
+                        "No hay movimientos válidos",
+                        "No se pueden realizar más movimientos desde la posición actual.");
+            }
+
+            // Verificar si se completó el recorrido
+            if (game.isSolved()) {
+                showAlert(Alert.AlertType.INFORMATION, "¡Felicidades!",
+                        "Recorrido completado",
+                        "Has completado el recorrido del caballo correctamente.");
+                endGame();
             }
         }
     }
@@ -239,6 +262,7 @@ public class KnightController implements GameController {
         if (game != null) {
             // Deshabilitar controles durante la resolución
             setControlsEnabled(false);
+            solutionInProgress = true;
 
             // Resolver en un hilo separado para no bloquear la UI
             new Thread(() -> {
@@ -277,6 +301,7 @@ public class KnightController implements GameController {
 
                     updateUI();
                     setControlsEnabled(true);
+                    solutionInProgress = false;
 
                     if (success) {
                         showAlert(Alert.AlertType.INFORMATION, "Éxito",
@@ -299,6 +324,7 @@ public class KnightController implements GameController {
     public void resetGame() {
         if (game != null) {
             game.reset();
+            solutionInProgress = false;
 
             // Limpiar tablero
             if (chessBoard != null) {

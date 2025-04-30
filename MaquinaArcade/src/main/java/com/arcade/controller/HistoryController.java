@@ -3,6 +3,7 @@ package com.arcade.controller;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -16,6 +17,9 @@ import javafx.stage.Stage;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import com.arcade.model.dao.RecordRepository;
 import com.arcade.model.entity.GameRecord;
@@ -75,6 +79,9 @@ public class HistoryController {
         refreshButton.setOnAction(e -> loadRecords());
         closeButton.setOnAction(e -> closeWindow());
         deleteButton.setOnAction(e -> deleteSelectedRecord());
+
+        // Inicializar el repositorio
+        recordRepository = new RecordRepository();
     }
 
     /**
@@ -89,11 +96,10 @@ public class HistoryController {
         TableColumn<GameRecord, String> dateTimeCol = new TableColumn<>("Fecha/Hora");
         dateTimeCol.setCellValueFactory(data -> {
             LocalDateTime dateTime = data.getValue().getEndTime();
-            return new SimpleStringProperty(
-                    dateTime != null ?
-                            dateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")) :
-                            ""
-            );
+            if (dateTime == null) {
+                return new SimpleStringProperty("(sin fecha)");
+            }
+            return new SimpleStringProperty(dateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
         });
 
         // Columna de pasos
@@ -157,25 +163,77 @@ public class HistoryController {
      * Carga los registros según el filtro seleccionado
      */
     private void loadRecords() {
-        if (gameService == null) {
-            return;
-        }
-
         try {
             String gameTypeString = gameTypeComboBox.getValue();
-            List<GameRecord> records;
+            List<GameRecord> records = new ArrayList<>();
 
             if ("Todos".equals(gameTypeString)) {
-                records = gameService.getGameHistory(null);
+                // Cargar registros de todos los tipos
+                if (recordRepository != null) {
+                    try {
+                        records.addAll(recordRepository.findAllQueenRecords());
+                        records.addAll(recordRepository.findAllKnightRecords());
+                        records.addAll(recordRepository.findAllHanoiRecords());
+                    } catch (Exception e) {
+                        System.err.println("Error al cargar registros desde repositorio: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+
+                // Si el repositorio falla o no tiene datos, intentar con el servicio
+                if (records.isEmpty() && gameService != null) {
+                    for (GameType type : GameType.values()) {
+                        List<GameRecord> typeRecords = gameService.getGameHistory(type);
+                        if (typeRecords != null && !typeRecords.isEmpty()) {
+                            records.addAll(typeRecords);
+                        }
+                    }
+                }
             } else {
+                // Cargar registros de un tipo específico
                 GameType gameType = getGameTypeFromString(gameTypeString);
-                records = gameService.getGameHistory(gameType);
+
+                if (gameType != null) {
+                    if (recordRepository != null) {
+                        switch (gameType) {
+                            case QUEENS:
+                                records.addAll(recordRepository.findAllQueenRecords());
+                                break;
+                            case KNIGHT:
+                                records.addAll(recordRepository.findAllKnightRecords());
+                                break;
+                            case HANOI:
+                                records.addAll(recordRepository.findAllHanoiRecords());
+                                break;
+                        }
+                    }
+
+                    // Si el repositorio falla o no tiene datos, intentar con el servicio
+                    if (records.isEmpty() && gameService != null) {
+                        List<GameRecord> typeRecords = gameService.getGameHistory(gameType);
+                        if (typeRecords != null) {
+                            records.addAll(typeRecords);
+                        }
+                    }
+                }
             }
 
+            // Ordenar por fecha (más reciente primero)
+            if (!records.isEmpty()) {
+                Collections.sort(records, Comparator.comparing(GameRecord::getEndTime,
+                        Comparator.nullsLast(Comparator.reverseOrder())));
+            }
+
+            // Actualizar la tabla
             recordsTable.setItems(FXCollections.observableArrayList(records));
-            updateStats();
+            System.out.println("Registros cargados en la tabla: " + records.size());
+
+            // Actualizar estadísticas
+            updateStats(records);
 
         } catch (Exception e) {
+            System.err.println("Error al cargar registros: " + e.getMessage());
+            e.printStackTrace();
             showAlert(AlertType.ERROR, "Error", "Error al cargar registros", e.getMessage());
         }
     }
@@ -183,9 +241,16 @@ public class HistoryController {
     /**
      * Actualiza las estadísticas mostradas
      */
-    private void updateStats() {
-        int total = gameService.getTotalGamesPlayed();
-        int completed = gameService.getCompletedGamesCount();
+    private void updateStats(List<GameRecord> records) {
+        int total = records.size();
+        int completed = 0;
+
+        for (GameRecord record : records) {
+            if (record.isCompleted()) {
+                completed++;
+            }
+        }
+
         double percentage = total > 0 ? (completed * 100.0 / total) : 0;
 
         statsLabel.setText(String.format(
@@ -215,6 +280,9 @@ public class HistoryController {
         alert.showAndWait().ifPresent(response -> {
             if (response == javafx.scene.control.ButtonType.OK) {
                 try {
+                    if (recordRepository == null) {
+                        recordRepository = new RecordRepository();
+                    }
                     recordRepository.deleteRecord(selectedRecord.getId(), selectedRecord.getClass());
                     loadRecords(); // Recargar la lista
                     showAlert(AlertType.INFORMATION, "Información", "Registro eliminado",
@@ -241,7 +309,6 @@ public class HistoryController {
      */
     public void setGameService(GameService gameService) {
         this.gameService = gameService;
-        this.recordRepository = new RecordRepository();
         loadRecords();
     }
 

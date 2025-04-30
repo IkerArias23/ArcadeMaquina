@@ -1,5 +1,6 @@
 package com.arcade.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -9,6 +10,9 @@ import org.hibernate.query.Query;
 
 import com.arcade.config.HibernateConfig;
 import com.arcade.model.entity.GameRecord;
+import com.arcade.model.entity.HanoiRecord;
+import com.arcade.model.entity.KnightRecord;
+import com.arcade.model.entity.QueenRecord;
 import com.arcade.model.game.Game;
 import com.arcade.service.GameFactory.GameType;
 
@@ -77,11 +81,13 @@ public class GameServiceImpl implements GameService {
             session.save(record);
 
             transaction.commit();
+            System.out.println("Registro guardado con ID: " + record.getId());
             return record;
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
+            System.err.println("Error al guardar registro: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
@@ -89,64 +95,125 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public List<GameRecord> getGameHistory(GameType type) {
-        String discriminatorValue;
-        switch (type) {
-            case QUEENS:
-                discriminatorValue = "QUEENS";
-                break;
-            case KNIGHT:
-                discriminatorValue = "KNIGHT";
-                break;
-            case HANOI:
-                discriminatorValue = "HANOI";
-                break;
-            default:
-                throw new IllegalArgumentException("Tipo de juego no soportado: " + type);
-        }
-
+        List<GameRecord> records = new ArrayList<>();
         try (Session session = sessionFactory.openSession()) {
-            Query<GameRecord> query = session.createQuery(
-                    "FROM GameRecord WHERE game_type = :type ORDER BY end_time DESC",
-                    GameRecord.class
-            );
-            query.setParameter("type", discriminatorValue);
+            if (type == null) {
+                // Obtener todos los registros
+                try {
+                    Query<QueenRecord> queryQueens = session.createQuery(
+                            "FROM QueenRecord ORDER BY endTime DESC",
+                            QueenRecord.class
+                    );
+                    records.addAll(queryQueens.list());
+                } catch (Exception e) {
+                    System.err.println("Error al cargar registros QueenRecord: " + e.getMessage());
+                }
 
-            return query.list();
+                try {
+                    Query<KnightRecord> queryKnight = session.createQuery(
+                            "FROM KnightRecord ORDER BY endTime DESC",
+                            KnightRecord.class
+                    );
+                    records.addAll(queryKnight.list());
+                } catch (Exception e) {
+                    System.err.println("Error al cargar registros KnightRecord: " + e.getMessage());
+                }
+
+                try {
+                    Query<HanoiRecord> queryHanoi = session.createQuery(
+                            "FROM HanoiRecord ORDER BY endTime DESC",
+                            HanoiRecord.class
+                    );
+                    records.addAll(queryHanoi.list());
+                } catch (Exception e) {
+                    System.err.println("Error al cargar registros HanoiRecord: " + e.getMessage());
+                }
+            } else {
+                // Filtrar por tipo de juego
+                switch (type) {
+                    case QUEENS:
+                        try {
+                            Query<QueenRecord> query = session.createQuery(
+                                    "FROM QueenRecord ORDER BY endTime DESC",
+                                    QueenRecord.class
+                            );
+                            records.addAll(query.list());
+                        } catch (Exception e) {
+                            System.err.println("Error al cargar registros QueenRecord: " + e.getMessage());
+                        }
+                        break;
+                    case KNIGHT:
+                        try {
+                            Query<KnightRecord> query = session.createQuery(
+                                    "FROM KnightRecord ORDER BY endTime DESC",
+                                    KnightRecord.class
+                            );
+                            records.addAll(query.list());
+                        } catch (Exception e) {
+                            System.err.println("Error al cargar registros KnightRecord: " + e.getMessage());
+                        }
+                        break;
+                    case HANOI:
+                        try {
+                            Query<HanoiRecord> query = session.createQuery(
+                                    "FROM HanoiRecord ORDER BY endTime DESC",
+                                    HanoiRecord.class
+                            );
+                            records.addAll(query.list());
+                        } catch (Exception e) {
+                            System.err.println("Error al cargar registros HanoiRecord: " + e.getMessage());
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
         } catch (Exception e) {
+            System.err.println("Error general al cargar registros: " + e.getMessage());
             e.printStackTrace();
-            return List.of(); // Lista vacía en caso de error
         }
+
+        System.out.println("Registros cargados: " + records.size());
+        return records;
     }
 
     @Override
     public int getTotalGamesPlayed() {
+        int total = 0;
         try (Session session = sessionFactory.openSession()) {
-            Query<Long> query = session.createQuery(
-                    "SELECT COUNT(id) FROM GameRecord",
-                    Long.class
-            );
-
-            Long result = query.uniqueResult();
-            return result != null ? result.intValue() : 0;
+            try {
+                Query<Long> query = session.createQuery(
+                        "SELECT COUNT(id) FROM GameRecord",
+                        Long.class
+                );
+                Long result = query.uniqueResult();
+                total = result != null ? result.intValue() : 0;
+            } catch (Exception e) {
+                System.err.println("Error al contar registros: " + e.getMessage());
+            }
         } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
+            System.err.println("Error general al contar registros: " + e.getMessage());
         }
+        return total;
     }
 
     @Override
     public int getCompletedGamesCount() {
+        int total = 0;
         try (Session session = sessionFactory.openSession()) {
-            Query<Long> query = session.createQuery(
-                    "SELECT COUNT(id) FROM GameRecord WHERE completed = true",
-                    Long.class
-            );
-
-            Long result = query.uniqueResult();
-            return result != null ? result.intValue() : 0;
+            try {
+                Query<Long> query = session.createQuery(
+                        "SELECT COUNT(id) FROM GameRecord WHERE completed = true",
+                        Long.class
+                );
+                Long result = query.uniqueResult();
+                total = result != null ? result.intValue() : 0;
+            } catch (Exception e) {
+                System.err.println("Error al contar registros completados: " + e.getMessage());
+            }
         } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
+            System.err.println("Error general al contar registros completados: " + e.getMessage());
         }
+        return total;
     }
 }

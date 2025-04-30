@@ -156,52 +156,53 @@ public class QueensController implements GameController {
                 return;
             }
 
-            // Implementación manual del paso a paso para mayor control visual
-            // En vez de usar el game.step(), colocaremos una reina manualmente
-            // en cada paso para garantizar visualización
+            // Obtener el estado actual de las reinas
+            int[] queensPositions = game.getQueensPositions();
 
-            // Limpiar la fila actual (por si había alguna reina previa)
-            for (int col = 0; col < boardSize; col++) {
-                if (game.getQueensPositions()[currentRow] == col) {
-                    game.removeQueen(currentRow, col);
-                }
+            // Determinar la posición de inicio para buscar en la fila actual
+            int startCol = -1;
+            if (queensPositions[currentRow] >= 0) {
+                // Si ya hay una reina en esta fila, empezamos en la siguiente columna
+                startCol = queensPositions[currentRow] + 1;
+                // Primero quitamos la reina actual
+                game.removeQueen(currentRow, queensPositions[currentRow]);
+            } else {
+                // Si no hay reina, empezamos en la columna 0
+                startCol = 0;
             }
 
-            // Intentar colocar la reina en cada columna de la fila actual hasta encontrar posición válida
-            boolean foundValid = false;
-            for (int col = 0; col < boardSize; col++) {
+            // Intentar colocar una reina en la fila actual
+            boolean foundValidPosition = false;
+
+            // Probar cada columna desde startCol hasta el final
+            for (int col = startCol; col < boardSize; col++) {
                 if (game.placeQueen(currentRow, col)) {
-                    foundValid = true;
+                    foundValidPosition = true;
                     break;
                 }
             }
 
-            // Si no se encontró posición válida en esta fila, retroceder a la fila anterior
-            if (!foundValid) {
+            // Si no encontramos una posición válida, retrocedemos
+            if (!foundValidPosition) {
+                // Si no se pudo colocar en ninguna posición, retroceder
                 if (currentRow > 0) {
-                    // Retroceder a la fila anterior
                     currentRow--;
-
-                    // Quitar la reina de la fila anterior y actualizar
-                    int prevCol = game.getQueensPositions()[currentRow];
-                    if (prevCol >= 0) {
-                        game.removeQueen(currentRow, prevCol);
-                    }
-
-                    showAlert(Alert.AlertType.INFORMATION, "Paso a paso",
+                    // El mensaje debe indicar que retrocedemos a la fila anterior
+                    showAlert(Alert.AlertType.INFORMATION, "Retroceso",
                             "Retroceso",
                             "No hay posición válida en la fila " + (currentRow + 1) +
                                     ". Retrocediendo a la fila " + (currentRow + 1) + ".");
                 } else {
+                    // Si estamos en la primera fila y no hay posición válida, no hay solución
                     showAlert(Alert.AlertType.INFORMATION, "Información",
                             "No hay solución",
-                            "No se puede colocar reina en la primera fila.");
+                            "No se puede encontrar una solución para este tablero.");
                 }
             } else {
-                // Avanzar a la siguiente fila para el próximo paso
+                // Avanzar a la siguiente fila
                 currentRow++;
 
-                // Si hemos colocado todas las reinas, mostrar mensaje de éxito
+                // Si hemos llegado al final, hemos encontrado una solución
                 if (currentRow == boardSize) {
                     showAlert(Alert.AlertType.INFORMATION, "¡Éxito!",
                             "Solución encontrada",
@@ -211,7 +212,7 @@ public class QueensController implements GameController {
                 }
             }
 
-            // Actualizar UI
+            // Actualizar la interfaz
             updateUI();
         }
     }

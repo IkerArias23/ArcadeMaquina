@@ -91,4 +91,5 @@ public class ArcadeApplication extends Application {
         // Cerrar la conexión con la base de datos
         HibernateConfig.getInstance().shutdown();
     }
+    
 }

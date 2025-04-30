@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -122,7 +123,7 @@ public class MainController {
 
         } catch (IOException e) {
             e.printStackTrace();
-            // Mostrar un diálogo de error
+            showAlert("Error", "Error al abrir el juego", e.getMessage());
         }
     }
 
@@ -131,7 +132,7 @@ public class MainController {
      */
     private void openHistoryView() {
         try {
-            // Cargar el FXML del historial
+            // Cargar el FXML del historial (corregido el nombre del archivo)
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/histori.fxml"));
             Parent root = loader.load();
 
@@ -155,7 +156,21 @@ public class MainController {
 
         } catch (IOException e) {
             e.printStackTrace();
-            // Mostrar un diálogo de error
+            showAlert("Error", "Error al abrir el historial", e.getMessage());
         }
+    }
+
+    /**
+     * Muestra un mensaje de error en un diálogo
+     * @param title título del error
+     * @param header encabezado del error
+     * @param message mensaje de error
+     */
+    private void showAlert(String title, String header, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

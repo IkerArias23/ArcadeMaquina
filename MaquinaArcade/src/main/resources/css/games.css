@@ -1,0 +1,272 @@
+/* Retro Arcade Games Style - Años 90 */
+
+/* Estilos específicos para los componentes de juegos */
+
+/* Tablero de ajedrez (N-Reinas y Recorrido del Caballo) */
+.chess-board {
+    -fx-background-color: #000033;
+    -fx-border-color: #00ffff;
+    -fx-border-width: 4px;
+    -fx-effect: dropshadow(gaussian, #00ffff, 10, 0.4, 0, 0);
+    -fx-padding: 5px;
+}
+
+.chess-cell {
+    -fx-border-color: #001133;
+    -fx-border-width: 1px;
+}
+
+.chess-cell-light {
+    -fx-background-color: #003366;
+}
+
+.chess-cell-dark {
+    -fx-background-color: #001a33;
+}
+
+.chess-cell:hover {
+    -fx-border-color: #00ffff;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, #00ffff, 5, 0.3, 0, 0);
+}
+
+.chess-cell.selected {
+    -fx-border-color: #ff00ff;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, #ff00ff, 8, 0.6, 0, 0);
+}
+
+/* Piezas de ajedrez */
+.queen-piece {
+    -fx-fill: #ff00ff;
+    -fx-stroke: #ffffff;
+    -fx-stroke-width: 2;
+    -fx-effect: dropshadow(gaussian, #ff00ff, 8, 0.7, 0, 0);
+}
+
+.knight-piece {
+    -fx-fill: #00ffff;
+    -fx-stroke: #ffffff;
+    -fx-stroke-width: 2;
+    -fx-effect: dropshadow(gaussian, #00ffff, 8, 0.7, 0, 0);
+}
+
+/* Números en el tablero del Recorrido del Caballo */
+.move-number {
+    -fx-fill: #ffff00;
+    -fx-font-family: 'Press Start 2P', 'Courier New', monospace;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, #ffaa00, 3, 0.5, 0, 0);
+}
+
+/* Torres de Hanoi */
+.hanoi-board {
+    -fx-background-color: #000033;
+    -fx-border-color: #00ffff;
+    -fx-border-width: 4px;
+    -fx-effect: dropshadow(gaussian, #00ffff, 10, 0.4, 0, 0);
+    -fx-padding: 10px;
+}
+
+.hanoi-rod {
+    -fx-fill: #663300;
+    -fx-stroke: #996600;
+    -fx-stroke-width: 2;
+    -fx-effect: dropshadow(gaussian, #996600, 5, 0.5, 0, 0);
+}
+
+.hanoi-base {
+    -fx-fill: #996600;
+    -fx-stroke: #cc9900;
+    -fx-stroke-width: 3;
+    -fx-effect: dropshadow(gaussian, #cc9900, 8, 0.5, 0, 0);
+}
+
+.hanoi-disk {
+    -fx-arc-width: 15;
+    -fx-arc-height: 15;
+    -fx-stroke: #ffffff;
+    -fx-stroke-width: 2;
+}
+
+/* Discos de diferentes colores */
+.hanoi-disk-1 {
+    -fx-fill: #ff0000;
+    -fx-effect: dropshadow(gaussian, #ff0000, 10, 0.7, 0, 0);
+}
+
+.hanoi-disk-2 {
+    -fx-fill: #ff9900;
+    -fx-effect: dropshadow(gaussian, #ff9900, 10, 0.7, 0, 0);
+}
+
+.hanoi-disk-3 {
+    -fx-fill: #ffff00;
+    -fx-effect: dropshadow(gaussian, #ffff00, 10, 0.7, 0, 0);
+}
+
+.hanoi-disk-4 {
+    -fx-fill: #00ff00;
+    -fx-effect: dropshadow(gaussian, #00ff00, 10, 0.7, 0, 0);
+}
+
+.hanoi-disk-5 {
+    -fx-fill: #00ffff;
+    -fx-effect: dropshadow(gaussian, #00ffff, 10, 0.7, 0, 0);
+}
+
+.hanoi-disk-6 {
+    -fx-fill: #0000ff;
+    -fx-effect: dropshadow(gaussian, #0000ff, 10, 0.7, 0, 0);
+}
+
+.hanoi-disk-7 {
+    -fx-fill: #ff00ff;
+    -fx-effect: dropshadow(gaussian, #ff00ff, 10, 0.7, 0, 0);
+}
+
+/* Torre seleccionada en Hanoi */
+.hanoi-rod.selected {
+    -fx-fill: #ff9900;
+    -fx-stroke: #ffcc00;
+    -fx-stroke-width: 3;
+    -fx-effect: dropshadow(gaussian, #ffcc00, 15, 0.8, 0, 0);
+}
+
+/* Área de juego principal */
+.game-container {
+    -fx-background-color: #000033;
+    -fx-border-color: #00ffff;
+    -fx-border-width: 3px;
+    -fx-padding: 10px;
+    -fx-effect: dropshadow(gaussian, #00ffff, 12, 0.4, 0, 0);
+}
+
+/* Panel de control de juegos */
+.control-panel {
+    -fx-background-color: #000044;
+    -fx-border-color: #00ffff;
+    -fx-border-width: 3px;
+    -fx-padding: 15px;
+    -fx-spacing: 15px;
+    -fx-effect: dropshadow(gaussian, #00ffff, 8, 0.3, 0, 0);
+}
+
+/* Etiqueta de instrucciones */
+.instruction-label {
+    -fx-text-fill: #ffff00;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-color: #000066;
+    -fx-padding: 5px;
+    -fx-border-color: #ffcc00;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, #ffcc00, 5, 0.3, 0, 0);
+}
+
+/* Animación para las piezas de juego */
+@keyframes pulse {
+    0% { -fx-scale-x: 1.0; -fx-scale-y: 1.0; }
+    50% { -fx-scale-x: 1.1; -fx-scale-y: 1.1; }
+    100% { -fx-scale-x: 1.0; -fx-scale-y: 1.0; }
+}
+
+.queen-piece:hover, .knight-piece:hover, .hanoi-disk:hover {
+    -fx-animation: pulse 0.8s infinite;
+}
+
+/* Efecto de movimiento inválido */
+@keyframes shake {
+    0% { -fx-translate-x: 0px; }
+    25% { -fx-translate-x: 5px; }
+    50% { -fx-translate-x: -5px; }
+    75% { -fx-translate-x: 5px; }
+    100% { -fx-translate-x: 0px; }
+}
+
+.invalid-move {
+    -fx-animation: shake 0.4s;
+    -fx-border-color: #ff0000;
+    -fx-border-width: 3px;
+}
+
+/* Efecto de movimiento correcto */
+@keyframes correct {
+    0% { -fx-effect: dropshadow(gaussian, #00ff00, 0, 0, 0, 0); }
+    50% { -fx-effect: dropshadow(gaussian, #00ff00, 20, 0.8, 0, 0); }
+    100% { -fx-effect: dropshadow(gaussian, #00ff00, 0, 0, 0, 0); }
+}
+
+.correct-move {
+    -fx-animation: correct 1s;
+}
+
+/* Panel de estadísticas de juego */
+.stats-panel {
+    -fx-background-color: #000066;
+    -fx-border-color: #00ffff;
+    -fx-border-width: 2px;
+    -fx-padding: 10px;
+    -fx-spacing: 5px;
+    -fx-effect: innershadow(gaussian, #000000, 5, 0.5, 0, 0);
+}
+
+.stats-label {
+    -fx-text-fill: #ffff00;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(gaussian, #ffaa00, 3, 0.4, 0, 0);
+}
+
+/* Botones de juego */
+.game-button {
+    -fx-background-color: #ff0000;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-border-color: #ffcc00;
+    -fx-border-width: 3px;
+    -fx-effect: dropshadow(gaussian, #ff0000, 10, 0.6, 0, 0);
+}
+
+.game-button:hover {
+    -fx-background-color: #ff3333;
+    -fx-effect: dropshadow(gaussian, #ff3333, 15, 0.8, 0, 0);
+    -fx-cursor: hand;
+}
+
+.game-button:pressed {
+    -fx-background-color: #cc0000;
+    -fx-translate-y: 2px;
+}
+
+/* Efecto de escaneo para todos los tableros */
+.chess-board, .hanoi-board {
+    -fx-background-image: linear-gradient(to bottom,
+    rgba(0, 0, 0, 0.3) 0%,
+    transparent 5%,
+    transparent 95%,
+    rgba(0, 0, 0, 0.3) 100%);
+    -fx-background-size: 100% 10px;
+    -fx-background-repeat: repeat;
+}
+
+/* Efecto de vignette (oscurecer bordes) */
+.root {
+    -fx-background-color: radial-gradient(focus-angle 0.0deg, focus-distance 0.0%,
+    center 50.0% 50.0%, radius 100.0%,
+    rgba(0, 0, 0, 0) 0.0%, rgba(0, 0, 0, 0.8) 100.0%);
+}
+
+/* Efecto de pixelación para las imágenes */
+.pixelated-image {
+    -fx-smooth: false;
+    -fx-image-rendering: speed;
+}
+
+/* Efecto neon para elementos seleccionados */
+.selected {
+    -fx-effect: dropshadow(gaussian, #ff00ff, 15, 0.8, 0, 0);
+    -fx-border-color: #ff00ff;
+    -fx-border-width: 2px;
+}
